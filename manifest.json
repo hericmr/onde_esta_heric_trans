@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Location Tracker",
+  "name": "Onde Está Héric - Location Tracker",
+  "description": "Sistema de rastreamento de localização em tempo real",
   "icons": [
     {
       "src": "favicon.ico",
@@ -20,6 +21,19 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#007bff",
+  "background_color": "#ffffff",
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "pt-BR",
+  "categories": ["navigation", "utilities"],
+  "permissions": [
+    "geolocation",
+    "background-sync"
+  ],
+  "features": [
+    "Cross Platform",
+    "Offline Support",
+    "Real-time Location Tracking"
+  ]
 }
