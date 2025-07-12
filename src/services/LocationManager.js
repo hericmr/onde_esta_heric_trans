@@ -9,7 +9,8 @@ class LocationManager {
     this.maxRetries = 3;
     this.updateInterval = 5000; // 5 segundos
     this.intervalId = null;
-    this.isOnline = navigator.onLine;
+        this.isOnline = navigator.onLine;
+    this.lastSentLocation = null;
     
     this.setupNetworkListener();
     this.initDB();
@@ -38,12 +39,20 @@ class LocationManager {
     });
   }
 
-  async addLocation(location) {
+    async addLocation(location) {
     const locationData = {
       ...location,
       timestamp: Date.now(),
       user_id: 'anonymous' // Usuário anônimo fixo
     };
+
+    // Verifica se a localização é a mesma da última enviada
+    if (this.lastSentLocation && 
+        this.lastSentLocation.lat === locationData.lat && 
+        this.lastSentLocation.lng === locationData.lng) {
+      console.log('Localização idêntica à anterior, ignorando envio.');
+      return;
+    }
 
     // Adiciona à fila local
     this.queue.push(locationData);
@@ -110,9 +119,9 @@ class LocationManager {
         .insert([{
           lat: location.lat,
           lng: location.lng,
-          accuracy: location.accuracy,
-          timestamp: new Date(location.timestamp).toISOString(),
-          user_id: location.user_id
+          accuracy: location.accuracy
+          // Removido timestamp e user_id pois não existem na tabela
+          // created_at é automaticamente preenchido pelo Supabase
         }]);
 
       if (error) {
@@ -121,6 +130,7 @@ class LocationManager {
       }
 
       console.log('Localização enviada com sucesso');
+      this.lastSentLocation = location; // Atualiza a última localização enviada com sucesso
       return true;
     } catch (error) {
       console.error('Erro na requisição:', error);

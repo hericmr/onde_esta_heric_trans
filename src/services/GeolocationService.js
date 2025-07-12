@@ -157,6 +157,9 @@ class GeolocationService {
       case error.TIMEOUT:
         errorMessage = 'Timeout na obtenção da localização';
         break;
+      default:
+        errorMessage = 'Erro desconhecido de geolocalização';
+        break;
     }
     
     throw new Error(errorMessage);

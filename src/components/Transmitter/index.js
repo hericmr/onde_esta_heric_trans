@@ -37,6 +37,31 @@ const Transmitter = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const startLocationTracking = useCallback(async () => {
+    if (isTracking) return;
+    
+    try {
+      setPermissionStatus('Iniciando tracking...');
+      
+      // Configura callback para atualizações de localização
+      geolocationService.startTracking((newLocation) => {
+        setLocation(newLocation);
+        setLastUpdate(new Date());
+        setSendStatus(newLocation.forced ? 'Atualização forçada' : 'Localização atualizada');
+      });
+      
+      setIsTracking(true);
+      setPermissionStatus('Tracking ativo');
+      setSendStatus('Enviando localizações...');
+      setError(null);
+      
+    } catch (error) {
+      setError(error.message);
+      setPermissionStatus('Erro no tracking');
+      setIsTracking(false);
+    }
+  }, [isTracking]);
+
   // Verifica permissão de geolocalização
   const checkGeolocationPermission = useCallback(async () => {
     if (!("geolocation" in navigator)) {
@@ -66,7 +91,7 @@ const Transmitter = () => {
       setHasPermission(false);
       setPermissionStatus('Aguardando permissão');
     }
-  }, []);
+  }, [startLocationTracking]);
 
   useEffect(() => {
     checkGeolocationPermission();
@@ -92,31 +117,6 @@ const Transmitter = () => {
       setHasPermission(false);
       setPermissionStatus('Permissão negada');
       setError('Permissão de geolocalização negada. Por favor, permita o acesso à localização.');
-    }
-  };
-
-  const startLocationTracking = async () => {
-    if (isTracking) return;
-    
-    try {
-      setPermissionStatus('Iniciando tracking...');
-      
-      // Configura callback para atualizações de localização
-      geolocationService.startTracking((newLocation) => {
-        setLocation(newLocation);
-        setLastUpdate(new Date());
-        setSendStatus(newLocation.forced ? 'Atualização forçada' : 'Localização atualizada');
-      });
-      
-      setIsTracking(true);
-      setPermissionStatus('Tracking ativo');
-      setSendStatus('Enviando localizações...');
-      setError(null);
-      
-    } catch (error) {
-      setError(error.message);
-      setPermissionStatus('Erro no tracking');
-      setIsTracking(false);
     }
   };
 
